@@ -17,5 +17,6 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
   gem.add_dependency("httparty")
+  gem.add_dependency("retry")
   gem.add_dependency("json", "~> 1.7.7")
 end

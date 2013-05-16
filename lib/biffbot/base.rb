@@ -1,5 +1,6 @@
 require 'httparty'
 require 'json'
+require 'retry'
 require 'cgi'
 
 module Biffbot
@@ -16,10 +17,12 @@ module Biffbot
 					request = request + "&#{key}"
 				end
 			end
-			response = HTTParty.get(request)
-			response.parsed_response.each_pair do |key,value|
-				output[key.to_sym] = value
-			end
+      10.tries do
+        response = HTTParty.get(request)
+  			response.parsed_response.each_pair do |key,value|
+  				output[key.to_sym] = value
+  			end
+      end
 			return output
 		end
 		def batch(urls, options={})
@@ -35,11 +38,13 @@ module Biffbot
         { :method => "GET", :relative_url => relative_url }
       end
       options = { :body => {:token => @token, :batch => batch.to_json }, :basic_auth => @auth }
-			response = HTTParty.post(request, options)
+      10.tries do
+  			response = HTTParty.post(request, options)
       
-			JSON.parse(response.parsed_response).each do |response_dict|
-				output << JSON.parse(response_dict["body"])
-			end
+  			JSON.parse(response.parsed_response).each do |response_dict|
+  				output << JSON.parse(response_dict["body"])
+  			end
+      end
 			return output
     end
 	end
