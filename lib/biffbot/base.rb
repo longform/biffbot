@@ -1,5 +1,6 @@
 require 'httparty'
 require 'json'
+require 'cgi'
 
 module Biffbot
 	class Base
