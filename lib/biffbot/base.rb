@@ -20,7 +20,7 @@ module Biffbot
       10.tries do
         response = HTTParty.get(request)
   			response.parsed_response.each_pair do |key,value|
-  				output[key.to_sym] = value
+  				output[key] = value
   			end
       end
 			return output
