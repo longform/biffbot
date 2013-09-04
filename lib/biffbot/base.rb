@@ -41,7 +41,7 @@ module Biffbot
       10.tries do
   			response = HTTParty.post(request, options)
       
-  			JSON.parse(response.parsed_response).each do |response_dict|
+  			response.parsed_response.each do |response_dict|
   				output << JSON.parse(response_dict["body"])
   			end
       end
