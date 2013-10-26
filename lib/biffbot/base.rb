@@ -5,6 +5,10 @@ require 'cgi'
 
 module Biffbot
 	class Base
+
+    include HTTParty
+    default_timeout 120
+    
 		def initialize(token) 
 			@token = token
 		end
@@ -19,7 +23,7 @@ module Biffbot
 				end
 			end
       10.tries do
-        response = HTTParty.get(request)
+        response = self.class.get(request)
   			response.parsed_response.each_pair do |key,value|
   				output[key] = value
   			end
@@ -44,7 +48,7 @@ module Biffbot
       options = { :body => {:token => @token, :batch => batch_items.to_json }, :basic_auth => @auth }
       
       10.tries do
-  			response = HTTParty.post(request, options)
+  			response = self.class.post(request, options)
   			response.parsed_response.each do |response_dict|
   				relative_urls[response_dict['relative_url']][:body] = JSON.parse(response_dict["body"])
   			end
