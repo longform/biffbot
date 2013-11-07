@@ -18,8 +18,8 @@ module Biffbot
 			output = Hash.new
 			request = "http://www.diffbot.com/api/article?token=#{@token}&url=#{CGI.escape(@url)}"
 			options.each_pair do |key,value|
-				if key.match(/html|dontStripAds|tags|comments|summary|stats/) && value == true
-					request = request + "&#{key}"
+				if key.match(/html|dontStripAds|tags|comments|summary|stats|outback/) && value == true
+					request = request + "&#{key}=true"
 				end
 			end
       10.tries do
@@ -65,7 +65,7 @@ module Biffbot
     def relative_url(url, options)
       relative = "/api/article?token=#{@token}&url=#{CGI.escape(url)}"
       options.each_pair do |key,value|
-        if key.match(/html|dontStripAds|tags|comments|summary|stats/) && value == true
+        if key.match(/html|dontStripAds|tags|comments|summary|stats|outback/) && value == true
           relative = relative + "&#{key}"
         end
       end
