@@ -4,7 +4,10 @@ require 'retry'
 require 'cgi'
 
 module Biffbot
+  class ParserError < Exception; end
+  
 	class Base
+    
 
     include HTTParty
     default_timeout 120
@@ -24,9 +27,13 @@ module Biffbot
 			end
       10.tries do
         response = self.class.get(request)
-  			response.parsed_response.each_pair do |key,value|
-  				output[key] = value
-  			end
+        if response.parsed_response.respond_to?(:each_pair)
+    			response.parsed_response.each_pair do |key,value|
+    				output[key] = value
+    			end
+        else
+          raise ParserError, "Response: #{response.parsed_response.inspect}"
+        end
       end
 			return output
 		end
@@ -49,9 +56,13 @@ module Biffbot
       
       10.tries do
   			response = self.class.post(request, options)
-  			response.parsed_response.each do |response_dict|
-  				relative_urls[response_dict['relative_url']][:body] = JSON.parse(response_dict["body"])
-  			end
+        if response.parsed_response.respond_to?(:each)
+    			response.parsed_response.each do |response_dict|
+    				relative_urls[response_dict['relative_url']][:body] = JSON.parse(response_dict["body"])
+    			end
+        else
+          raise ParserError, "Response: #{response.parsed_response.inspect}"
+        end
       end
 
       # map hash of relative_urls back to the original url
