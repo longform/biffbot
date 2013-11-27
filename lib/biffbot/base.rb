@@ -1,6 +1,6 @@
 require 'httparty'
 require 'json'
-require 'retry'
+require 'retries'
 require 'cgi'
 
 module Biffbot
@@ -25,7 +25,7 @@ module Biffbot
 					request = request + "&#{key}=true"
 				end
 			end
-      10.tries do
+      with_retries(:max_tries => 5, :max_sleep_seconds => 10.0, :rescue => ResponseError) do
         response = self.class.get(request)
         if response.parsed_response.respond_to?(:each_pair)
     			response.parsed_response.each_pair do |key,value|
@@ -54,7 +54,7 @@ module Biffbot
       
       options = { :body => {:token => @token, :batch => batch_items.to_json }, :basic_auth => @auth }
       
-      10.tries do
+      with_retries(:max_tries => 5, :max_sleep_seconds => 10.0, :rescue => ResponseError) do
   			response = self.class.post(request, options)
         if response.parsed_response.respond_to?(:each)
     			response.parsed_response.each do |response_dict|
