@@ -35,6 +35,9 @@ module Biffbot
           raise ParserError, "Response: #{response.parsed_response.inspect}"
         end
       end
+      if output['errorCode']
+        raise ParserError, output['error']
+      end
 			return output
 		end
 
